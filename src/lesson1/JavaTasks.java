@@ -2,6 +2,14 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static java.lang.Math.abs;
+
 @SuppressWarnings("unused")
 public class JavaTasks {
     /**
@@ -34,8 +42,28 @@ public class JavaTasks {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
+
+    //Трудоемкость(T): O(n^2)
+    //Ресурсоемкость(R): O(n)
     static public void sortTimes(String inputName, String outputName) {
-        throw new NotImplementedError();
+        try (FileReader reader = new FileReader(inputName); FileWriter writer = new FileWriter(outputName)) {
+            Scanner scanner = new Scanner(reader);
+            ArrayList<Integer> list = new ArrayList<>();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss aa");
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                try {
+                    list.add((int)simpleDateFormat.parse(line).getTime());
+                } catch (ParseException e) {
+                    throw new NotImplementedError();
+                }
+            }
+            StringBuilder str = new StringBuilder();
+            list.stream().sorted().forEach(value -> str.append(simpleDateFormat.format(new Date(value))).append("\n"));
+            writer.write(str.toString());
+        } catch (IOException e) {
+            throw new NotImplementedError();
+        }
     }
 
     /**
@@ -65,7 +93,38 @@ public class JavaTasks {
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
     static public void sortAddresses(String inputName, String outputName) {
-        throw new NotImplementedError();
+        try (BufferedReader bufferedReader =
+                     new BufferedReader(new InputStreamReader(new FileInputStream(inputName), StandardCharsets.UTF_8));
+             BufferedWriter bufferedWriter =
+                     new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName), StandardCharsets.UTF_8))) {
+            String line;
+            HashMap<String, TreeSet<String>> addressAndPeople = new HashMap<>();
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] arrLine = line.split(" - ");
+                TreeSet<String> hashSet;
+                if (!addressAndPeople.containsKey(arrLine[1])) hashSet = new TreeSet<>();
+                else hashSet = addressAndPeople.get(arrLine[1]);
+                hashSet.add(arrLine[0]);
+                addressAndPeople.put(arrLine[1], hashSet);
+            }
+            StringBuilder str = new StringBuilder();
+            addressAndPeople.entrySet()
+                    .stream()
+                    .sorted((o1, o2) -> {
+                        String[] arrO1 = o1.getKey().split(" ");
+                        String[] arrO2 = o2.getKey().split(" ");
+                        if (arrO1[0].compareTo(arrO2[0]) == 0) {
+                            return Integer.compare(Integer.parseInt(arrO1[1]), Integer.parseInt(arrO2[1]));
+                        } else return arrO1[0].compareTo(arrO2[0]);
+                    })
+                    .forEach(entry  -> str.append(entry.getKey())
+                            .append(" - ")
+                            .append(String.join(", ", entry.getValue()))
+                            .append("\n"));
+            bufferedWriter.write(String.valueOf(str));
+        } catch (IOException e) {
+            throw new NotImplementedError();
+        }
     }
 
     /**
@@ -99,7 +158,29 @@ public class JavaTasks {
      * 121.3
      */
     static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputName));
+             FileWriter writer = new FileWriter(outputName)) {
+            String line;
+            final int minValue = 2730;
+            ArrayList<Integer> arrayList = new ArrayList<>();
+            while ((line = reader.readLine()) != null) {
+                int number = Integer.parseInt(line.replace(".", ""));
+                number += minValue;
+                arrayList.add(number);
+            }
+            StringBuilder str = new StringBuilder();
+            arrayList.stream().sorted().forEach(v -> {
+                int i = v - minValue;
+                if (i < 0) str.append("-");
+                str.append(abs(i / 10));
+                str.append(".");
+                str.append(abs(i % 10));
+                str.append("\n");
+            });
+            writer.write(String.valueOf(str));
+        } catch (IOException e) {
+            throw new NotImplementedError();
+        }
     }
 
     /**
