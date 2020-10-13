@@ -43,7 +43,7 @@ public class JavaTasks {
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
 
-    //Трудоемкость(T): O(n^2)
+    //Трудоемкость(T): O(nlogn)
     //Ресурсоемкость(R): O(n)
     static public void sortTimes(String inputName, String outputName) {
         try (FileReader reader = new FileReader(inputName); FileWriter writer = new FileWriter(outputName)) {
@@ -92,36 +92,30 @@ public class JavaTasks {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
+    //Трудоемкость(T): O(nlogn)
+    //Ресурсоемкость(R): O(n)
     static public void sortAddresses(String inputName, String outputName) {
-        try (BufferedReader bufferedReader =
-                     new BufferedReader(new InputStreamReader(new FileInputStream(inputName), StandardCharsets.UTF_8));
-             BufferedWriter bufferedWriter =
-                     new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName), StandardCharsets.UTF_8))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName, StandardCharsets.UTF_8));
+             FileWriter fileWriter = new FileWriter(new File(outputName), StandardCharsets.UTF_8)) {
             String line;
-            HashMap<String, TreeSet<String>> addressAndPeople = new HashMap<>();
+            TreeMap<String, TreeSet<String>> addressAndPeople = new TreeMap<>((o1, o2) -> {
+                String[] arrO1 = o1.split(" ");
+                String[] arrO2 = o2.split(" ");
+                if (arrO1[0].compareTo(arrO2[0]) == 0) {
+                    return Integer.compare(Integer.parseInt(arrO1[1]), Integer.parseInt(arrO2[1]));
+                } else return arrO1[0].compareTo(arrO2[0]);
+            });
             while ((line = bufferedReader.readLine()) != null) {
                 String[] arrLine = line.split(" - ");
-                TreeSet<String> hashSet;
-                if (!addressAndPeople.containsKey(arrLine[1])) hashSet = new TreeSet<>();
-                else hashSet = addressAndPeople.get(arrLine[1]);
-                hashSet.add(arrLine[0]);
-                addressAndPeople.put(arrLine[1], hashSet);
+                if (!addressAndPeople.containsKey(arrLine[1])) addressAndPeople.put(arrLine[1], new TreeSet<>());
+                addressAndPeople.get(arrLine[1]).add(arrLine[0]);
             }
             StringBuilder str = new StringBuilder();
-            addressAndPeople.entrySet()
-                    .stream()
-                    .sorted((o1, o2) -> {
-                        String[] arrO1 = o1.getKey().split(" ");
-                        String[] arrO2 = o2.getKey().split(" ");
-                        if (arrO1[0].compareTo(arrO2[0]) == 0) {
-                            return Integer.compare(Integer.parseInt(arrO1[1]), Integer.parseInt(arrO2[1]));
-                        } else return arrO1[0].compareTo(arrO2[0]);
-                    })
-                    .forEach(entry  -> str.append(entry.getKey())
-                            .append(" - ")
-                            .append(String.join(", ", entry.getValue()))
-                            .append("\n"));
-            bufferedWriter.write(String.valueOf(str));
+            addressAndPeople.forEach((key, value) -> str.append(key)
+                    .append(" - ")
+                    .append(String.join(", ", value))
+                    .append("\n"));
+            fileWriter.write(String.valueOf(str));
         } catch (IOException e) {
             throw new NotImplementedError();
         }
@@ -157,27 +151,24 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
+    //Трудоемкость(T): O(n + k)
+    //Ресурсоемкость(R): O(n)
     static public void sortTemperatures(String inputName, String outputName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(inputName));
              FileWriter writer = new FileWriter(outputName)) {
             String line;
             final int minValue = 2730;
-            ArrayList<Integer> arrayList = new ArrayList<>();
+            List<Integer> arrayList = new ArrayList<>();
             while ((line = reader.readLine()) != null) {
                 int number = Integer.parseInt(line.replace(".", ""));
                 number += minValue;
                 arrayList.add(number);
             }
-            StringBuilder str = new StringBuilder();
-            arrayList.stream().sorted().forEach(v -> {
-                int i = v - minValue;
-                if (i < 0) str.append("-");
-                str.append(abs(i / 10));
-                str.append(".");
-                str.append(abs(i % 10));
-                str.append("\n");
-            });
-            writer.write(String.valueOf(str));
+            int[] arrInt = new int[arrayList.size()];
+            for (int i = 0; i < arrayList.size(); i++) arrInt[i] = arrayList.get(i);
+            for (int value : Sorts.countingSort(arrInt, 7730)) {
+                writer.write(((float) value - minValue) / 10 + "\n");
+            }
         } catch (IOException e) {
             throw new NotImplementedError();
         }
