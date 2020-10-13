@@ -29,9 +29,9 @@ class TaskTestsJava : AbstractTaskTests() {
         sortSequence { inputName, outputName -> JavaTasks.sortSequence(inputName, outputName) }
     }
 
-    @Test
-    @Tag("2")
-    fun testMergeArraysJava() {
-        mergeArrays { first, second -> JavaTasks.mergeArrays(first, second) }
-    }
+//    @Test
+//    @Tag("2")
+//    fun testMergeArraysJava() {
+//        mergeArrays { first, second -> JavaTasks.mergeArrays(first, second) }
+//    }
 }
