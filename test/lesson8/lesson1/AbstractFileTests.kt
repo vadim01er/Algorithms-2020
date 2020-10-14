@@ -1,4 +1,4 @@
-package lesson1
+package lesson8.lesson1
 
 import java.io.File
 import kotlin.test.assertEquals
