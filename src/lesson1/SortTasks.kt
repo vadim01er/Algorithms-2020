@@ -1,6 +1,6 @@
 @file:Suppress("UNUSED_PARAMETER")
 
-package lesson8.lesson1
+package lesson1
 
 /**
  * Сортировка времён

@@ -97,8 +97,25 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
-    static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
+    //Трудоемкость(T): O(first.length * second.length)
+    //Ресурсоемкость(R): O(first.length * second.length)
+    static public String longestCommonSubstring(String first, String second) {
+        if (first.equals("") || second.equals("")) return "";
+        int[][] matrix = new int[first.length() + 1][first.length() + 1];
+        int maxI = 0, maxLength = 0;
+        for (int i = 1; i <= first.length(); i++) {
+            for (int j = 1; j <= second.length(); j++) {
+                if (first.charAt(i - 1) == second.charAt(j - 1)) {
+                    int nowElement = matrix[i - 1][j - 1] + 1;
+                    if (maxLength < nowElement){
+                        maxLength = nowElement;
+                        maxI = i;
+                    }
+                    matrix[i][j] = nowElement;
+                }
+            }
+        }
+        return first.substring(maxI - maxLength, maxI);
     }
 
     /**
@@ -111,7 +128,18 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
+
+    //Трудоемкость(T): O(n * sqrt(n))
+    //Ресурсоемкость(R): O(1)
     static public int calcPrimesNumber(int limit) {
-        throw new NotImplementedError();
+        if (limit <= 1) return 0;
+        int count = 0;
+        cont: for (int i = 2; i <= limit; i++) {
+            for (int j = 2; j <= Math.sqrt(i); j++) {
+                if (i % j == 0) continue cont;
+            }
+            count++;
+        }
+        return count;
     }
 }

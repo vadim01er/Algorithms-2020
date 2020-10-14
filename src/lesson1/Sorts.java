@@ -1,4 +1,4 @@
-package lesson8.lesson1;
+package lesson1;
 
 import java.util.Arrays;
 import java.util.Calendar;
