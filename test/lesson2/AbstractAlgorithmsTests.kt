@@ -121,7 +121,7 @@ abstract class AbstractAlgorithmsTests {
             ).trim()
         )
         // my test
-        assertEquals("", lesson2.longestCommonSubstring("", "").trim())
+        assertEquals("", longestCommonSubstring("", "").trim())
         assertEquals("", longestCommonSubstring("", "hi").trim())
         assertEquals("", longestCommonSubstring("hi", "").trim())
     }
