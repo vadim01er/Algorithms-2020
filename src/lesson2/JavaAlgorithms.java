@@ -3,6 +3,10 @@ package lesson2;
 import kotlin.NotImplementedError;
 import kotlin.Pair;
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
     /**
@@ -100,7 +104,7 @@ public class JavaAlgorithms {
     //Трудоемкость(T): O(first.length * second.length)
     //Ресурсоемкость(R): O(first.length * second.length)
     static public String longestCommonSubstring(String first, String second) {
-        if (first.equals("") || second.equals("")) return "";
+        if (first.isEmpty() || second.isEmpty()) return "";
         int[][] matrix = new int[first.length() + 1][first.length() + 1];
         int maxI = 0, maxLength = 0;
         for (int i = 1; i <= first.length(); i++) {
@@ -129,17 +133,21 @@ public class JavaAlgorithms {
      * Единица простым числом не считается.
      */
 
-    //Трудоемкость(T): O(n * sqrt(n))
-    //Ресурсоемкость(R): O(1)
+    //Трудоемкость(T): O( n * log(log(n)) )
+    //Ресурсоемкость(R): O(n)
     static public int calcPrimesNumber(int limit) {
         if (limit <= 1) return 0;
-        int count = 0;
-        cont: for (int i = 2; i <= limit; i++) {
-            for (int j = 2; j <= Math.sqrt(i); j++) {
-                if (i % j == 0) continue cont;
+        if (limit == 2) return 1;
+        int[] arr = new int[limit];
+        for (int i = 2; i < limit; i++) arr[i] = 1;
+
+        for (int i = 2; i < limit; i++) {
+            if (arr[i] != 0) {
+                for (int j = 2 * i; j < limit; j += i) {
+                    arr[j] = 0;
+                }
             }
-            count++;
         }
-        return count;
+        return Arrays.stream(arr).sum();
     }
 }
