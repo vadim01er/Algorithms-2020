@@ -12,6 +12,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         final T value;
         Node<T> left = null;
         Node<T> right = null;
+        Node<T> parent = null;
 
         Node(T value) {
             this.value = value;
@@ -79,10 +80,12 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         else if (comparison < 0) {
             assert closest.left == null;
             closest.left = newNode;
+            newNode.parent = closest;
         }
         else {
             assert closest.right == null;
             closest.right = newNode;
+            newNode.parent = closest;
         }
         size++;
         return true;
@@ -101,9 +104,51 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      */
     @Override
     public boolean remove(Object o) {
-        // TODO
-        throw new NotImplementedError();
+        @SuppressWarnings("unchecked")
+        T t = (T) o;
+        Node<T> removeElement = find(t);
+        if (removeElement == null) return false;
+        if (removeElement.value != t) return false;
+
+        if (removeElement.left == null && removeElement.right == null) {
+            remade(removeElement, null);
+
+        } else if (removeElement.left == null) {
+            remade(removeElement, removeElement.right);
+            removeElement.right.parent = removeElement.parent;
+
+        } else if (removeElement.right == null) {
+            remade(removeElement, removeElement.left);
+            removeElement.left.parent = removeElement.parent;
+
+        } else {
+            Node<T> remadeNode = removeElement.right;
+
+            while (remadeNode.left != null) remadeNode = remadeNode.left;
+
+            if (remadeNode.parent != removeElement) {
+                remade(remadeNode, remadeNode.right);
+                if (remadeNode.right != null) remadeNode.parent = remadeNode.right.parent;
+
+                remadeNode.right = removeElement.right;
+                remadeNode.right.parent = remadeNode;
+            }
+            remade(removeElement, remadeNode);
+            removeElement.parent = remadeNode.parent;
+
+            remadeNode.left = removeElement.left;
+            remadeNode.left.parent = remadeNode;
+        }
+        size--;
+        return true;
     }
+
+    public void remade(Node<T> first, Node<T> second) {
+        if (first.parent == null) root = second;
+        else if (first.parent.left == first) first.parent.left = second;
+        else first.parent.right = second;
+    }
+
 
     @Nullable
     @Override
@@ -119,8 +164,18 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
 
     public class BinarySearchTreeIterator implements Iterator<T> {
 
+        Stack<Node<T>> nodeStack = new Stack<>();
+        Node<T> nowNode = null;
+
         private BinarySearchTreeIterator() {
-            // Добавьте сюда инициализацию, если она необходима.
+            pushToStack(root);
+        }
+
+        private void pushToStack(Node<T> node) {
+            if (node != null) {
+                nodeStack.push(node);
+                pushToStack(node.left);
+            }
         }
 
         /**
@@ -135,8 +190,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          */
         @Override
         public boolean hasNext() {
-            // TODO
-            throw new NotImplementedError();
+            return !nodeStack.empty();
         }
 
         /**
@@ -154,8 +208,11 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          */
         @Override
         public T next() {
-            // TODO
-            throw new NotImplementedError();
+            if (nodeStack.empty()) throw new IllegalStateException();
+            Node<T> now = nodeStack.pop();
+            if (now.right != null) pushToStack(now.right);
+            nowNode = now;
+            return now.value;
         }
 
         /**
@@ -172,8 +229,9 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          */
         @Override
         public void remove() {
-            // TODO
-            throw new NotImplementedError();
+            if (nowNode == null) throw new IllegalStateException();
+            BinarySearchTree.this.remove(nowNode.value);
+            nowNode = null;
         }
     }
 
