@@ -102,6 +102,9 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      *
      * Средняя
      */
+
+    // Асимптотика O(log(N))
+    // Ресурсоемкость O(1)
     @Override
     public boolean remove(Object o) {
         @SuppressWarnings("unchecked")
