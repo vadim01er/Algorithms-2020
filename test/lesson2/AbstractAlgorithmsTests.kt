@@ -151,6 +151,6 @@ abstract class AbstractAlgorithmsTests {
 
         // my test
         assertEquals(0, calcPrimesNumber(0))
-        assertEquals(1, calcPrimesNumber(3))
+        assertEquals(2, calcPrimesNumber(3))
     }
 }

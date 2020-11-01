@@ -138,12 +138,12 @@ public class JavaAlgorithms {
     static public int calcPrimesNumber(int limit) {
         if (limit <= 1) return 0;
         if (limit == 2) return 1;
-        int[] arr = new int[limit];
-        for (int i = 2; i < limit; i++) arr[i] = 1;
+        int[] arr = new int[limit+1];
+        for (int i = 2; i <= limit; i++) arr[i] = 1;
 
-        for (int i = 2; i < limit; i++) {
+        for (int i = 2; i <= limit; i++) {
             if (arr[i] != 0) {
-                for (int j = 2 * i; j < limit; j += i) {
+                for (int j = 2 * i; j <= limit; j += i) {
                     arr[j] = 0;
                 }
             }
