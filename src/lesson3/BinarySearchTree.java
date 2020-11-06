@@ -167,7 +167,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
 
     public class BinarySearchTreeIterator implements Iterator<T> {
 
-        Stack<Node<T>> nodeStack = new Stack<>();
+        Deque<Node<T>> nodeStack = new ArrayDeque<>();
         Node<T> nowNode = null;
 
         private BinarySearchTreeIterator() {
@@ -191,9 +191,10 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          *
          * Средняя
          */
+        // Асимптотика: O(1)
         @Override
         public boolean hasNext() {
-            return !nodeStack.empty();
+            return !nodeStack.isEmpty();
         }
 
         /**
@@ -209,9 +210,10 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          *
          * Средняя
          */
+        //Асимптотика: O(log(n))
         @Override
         public T next() {
-            if (nodeStack.empty()) throw new IllegalStateException();
+            if (nodeStack.isEmpty()) throw new IllegalStateException();
             Node<T> now = nodeStack.pop();
             if (now.right != null) pushToStack(now.right);
             nowNode = now;
@@ -230,6 +232,8 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          *
          * Сложная
          */
+        // Асимптотика равна методу remove(): O(log(N))
+        // Ресурсоемкость: O(1)
         @Override
         public void remove() {
             if (nowNode == null) throw new IllegalStateException();
