@@ -2,8 +2,7 @@ package lesson6;
 
 import kotlin.NotImplementedError;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaGraphTasks {
@@ -95,8 +94,37 @@ public class JavaGraphTasks {
      *
      * Эта задача может быть зачтена за пятый и шестой урок одновременно
      */
+    // Асимптотика: O(V * E)
+    // Ресурсоемкость: O(V)
     public static Set<Graph.Vertex> largestIndependentVertexSet(Graph graph) {
-        throw new NotImplementedError();
+        Set<Graph.Vertex> vertices = graph.getVertices();
+        List<Graph.Vertex> answer = new ArrayList<>();
+        for (Graph.Vertex vertex: vertices) {
+            ArrayDeque<Graph.Vertex> stack = new ArrayDeque<>();
+            List<Graph.Vertex> currentAnswer = new ArrayList<>();
+            Set<Graph.Vertex> visited = new HashSet<>();
+            stack.add(vertex);
+            visited.add(vertex);
+            while (!stack.isEmpty() || visited.size() != vertices.size()) {
+                if (stack.isEmpty()) {
+                    vertices.stream().filter(vertex1 -> !visited.contains(vertex1)).forEach(stack::add);
+                }
+                Graph.Vertex current = stack.pop();
+                visited.add(current);
+                for (Graph.Vertex vertexNow : graph.getNeighbors(current)) {
+                    visited.add(vertexNow);
+                    stack.remove(vertexNow);
+                    graph.getNeighbors(vertexNow).stream()
+                            .filter(vertex1 -> !visited.contains(vertex1))
+                            .forEach(stack::add);
+                }
+                currentAnswer.add(current);
+            }
+            if (answer.size() < currentAnswer.size()) {
+                answer = currentAnswer;
+            }
+        }
+        return new HashSet<>(answer);
     }
 
     /**
@@ -119,8 +147,21 @@ public class JavaGraphTasks {
      *
      * Ответ: A, E, J, K, D, C, H, G, B, F, I
      */
+    // Асимптотика: O(V + E)
+    // Ресурсоемкость: O(V)
     public static Path longestSimplePath(Graph graph) {
-        throw new NotImplementedError();
+        Path longestPath = new Path();
+        Deque<Path> paths = new ArrayDeque<>();
+        graph.getVertices().forEach(vertex -> paths.add(new Path(vertex)));
+        while (!paths.isEmpty()) {
+            Path current = paths.pollLast();
+            int currentLength = current.getLength();
+            longestPath = currentLength < longestPath.getLength() ? longestPath : current;
+            graph.getNeighbors(current.getVertices().get(currentLength)).stream()
+                    .filter(vertex -> !current.contains(vertex))
+                    .forEach(vertex -> paths.add(new Path(current, graph, vertex)));
+        }
+        return longestPath;
     }
 
 
